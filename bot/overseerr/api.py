@@ -115,5 +115,5 @@ async def overseerr_search(query, requester_name=None, requester_avatar_url=None
                         text=f"Powered by Fetcherr • Requested by {requester_name or 'Unknown'}"
                     )
 
-                embeds.append({"embed": embed})
+                embeds.append({"embed": embed, "result": result})
             return embeds
