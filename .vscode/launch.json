@@ -1,0 +1,14 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+    
+        {
+            "name": "Run bot.main as module",
+            "type": "python",
+            "request": "launch",
+            "module": "bot.main",           // <<< This is key!
+            "cwd": "${workspaceFolder}",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
