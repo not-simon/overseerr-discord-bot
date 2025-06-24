@@ -38,11 +38,37 @@ async def overseerr_search(query, requester_name=None, requester_avatar_url=None
         headers = {"X-Api-Key": OVERSEERR_API_KEY}
         async with session.get(url, headers=headers) as resp:
             logging.info(f"Overseerr API status: {resp.status}")
+
+            # ERROR HANDLING: if Overseerr returns error status
+            if resp.status != 200:
+                logging.error(f"Overseerr API error: {resp.status}")
+                error_embed = discord.Embed(
+                    title="Overseerr API Error",
+                    description="Sorry, could not retrieve results from Overseerr.",
+                    color=discord.Color.red()
+                )
+                embeds = [{"embed": error_embed}]
+                return embeds
+
             data = await resp.json()
             logging.info(f"Overseerr API returned: {data}")
             results = data.get("results", [])
+
             embeds = []
-            for result in results[:3]:
+
+
+            embeds = []
+
+            if not results:
+                no_embed = discord.Embed(
+                    title="No Results",
+                    description=f"No results found for '{query}'.",
+                    color=discord.Color.orange()
+                )
+                embeds.append({"embed": no_embed})
+                return embeds
+
+            for result in results[:5]:
                 title = result.get("title") or result.get("name", "Unknown Title")
                 year = get_year(result)
                 overview = (result.get("overview") or "No description available.").strip()
@@ -79,10 +105,15 @@ async def overseerr_search(query, requester_name=None, requester_avatar_url=None
                     }.get(status, "Unknown")
                     embed.add_field(name="Request Status", value=status_str, inline=True)
 
-                embed.set_footer(
-                    text=f"Powered by Fetcherr • Requested by {requester_name or 'Unknown'}",
-                    icon_url=requester_avatar_url or discord.Embed.Empty
-                )
+                if requester_avatar_url:
+                    embed.set_footer(
+                        text=f"Powered by Fetcherr • Requested by {requester_name or 'Unknown'}",
+                        icon_url=requester_avatar_url
+                    )
+                else:
+                    embed.set_footer(
+                        text=f"Powered by Fetcherr • Requested by {requester_name or 'Unknown'}"
+                    )
 
                 embeds.append({"embed": embed})
             return embeds
