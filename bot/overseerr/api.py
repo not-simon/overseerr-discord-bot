@@ -69,12 +69,12 @@ async def overseerr_search(query, requester_name=None, requester_avatar_url=None
                 return embeds
 
             for result in results[:5]:
+                tmdb_id = result.get("tmdbId") or result.get("id")
                 title = result.get("title") or result.get("name", "Unknown Title")
                 year = get_year(result)
                 overview = (result.get("overview") or "No description available.").strip()
                 if len(overview) > 350:
                     overview = overview[:347] + "…"
-
                 media_type = result.get("mediaType", "unknown")
                 color = get_type_color(media_type)
                 tmdb_url = get_tmdb_url(result)
@@ -86,7 +86,6 @@ async def overseerr_search(query, requester_name=None, requester_avatar_url=None
                     color=color,
                     url=tmdb_url
                 )
-
                 if poster:
                     embed.set_thumbnail(url=f"https://image.tmdb.org/t/p/w500{poster}")
 
@@ -115,5 +114,11 @@ async def overseerr_search(query, requester_name=None, requester_avatar_url=None
                         text=f"Powered by Fetcherr • Requested by {requester_name or 'Unknown'}"
                     )
 
-                embeds.append({"embed": embed, "result": result})
+                # Only append if tmdb_id is present
+                if tmdb_id:
+                    embeds.append({"embed": embed, "result": result})
+                else:
+                    embed.add_field(name="⚠️ Not Requestable", value="No TMDb ID found.", inline=False)
+                    embeds.append({"embed": embed, "result": result})
+
             return embeds
