@@ -1,8 +1,6 @@
-version: '3.8'
-
 services:
   overseerr-bot:
-    build: .
+    image: notsimonb/overseerr-discord-bot:latest
     container_name: overseerr-discord-bot
     restart: unless-stopped
     env_file:
