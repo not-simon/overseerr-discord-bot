@@ -28,7 +28,7 @@ class RequestView(ui.View):
                     custom_id=f"req_tv_all_{tmdb_id}"
                 ))
                 # Limit to 10 season buttons to avoid clutter
-                for season in seasons[:10]:
+                for season in seasons[:100]:
                     self.add_item(ui.Button(
                         label=f"Request Season {season}",
                         style=ButtonStyle.blurple,
